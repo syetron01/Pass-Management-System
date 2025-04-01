@@ -180,6 +180,9 @@ public class ManagementDashboardController {
         currentServingRow = new ServedCustomer("", "");
         servedList.add(currentServingRow);
 
+        // Add input validation for the customer name field
+        setupInputValidation();
+
         // Update the display
         updateDisplay();
 
@@ -189,6 +192,33 @@ public class ManagementDashboardController {
         serveGeneralButton.setOnAction(e -> serveGeneralCustomer());
         serveVIPButton.setOnAction(e -> serveVIPCustomer());
         displayReport.setOnAction(e -> showDisplayReport());
+    }
+
+    private void setupInputValidation() {
+        // Use a TextFormatter to validate input
+        customerNameField.setTextFormatter(new TextFormatter<>(change -> {
+            String newText = change.getControlNewText();
+
+            // If the change is deleting text (like backspace or delete key), allow it
+            if (change.isDeleted()) {
+                return change;
+            }
+
+            // If the new character being added is a letter or space, allow it
+            if (change.getText().matches("[a-zA-Z\\s]*")) {
+                return change;
+            }
+
+            // Show alert for invalid input
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Invalid Input");
+            alert.setHeaderText("Letters Only");
+            alert.setContentText("Please enter letters only for customer names.");
+            alert.show();
+
+            // Reject the change
+            return null;
+        }));
     }
 
     private void addGeneralCustomer() {
